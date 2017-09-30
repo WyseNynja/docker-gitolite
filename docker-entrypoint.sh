@@ -39,7 +39,7 @@ else
   su - git -c "gitolite setup"
 fi
 
-if [ "${1}" = 'sshd' ]; then
+if [ "${1}" = '/usr/sbin/sshd' ]; then
   exec "$@" -D
 fi
 
