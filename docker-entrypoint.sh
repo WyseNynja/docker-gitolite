@@ -1,9 +1,14 @@
 #!/bin/sh
 
-# if command is sshd, set it up correctly
-if [ "${1}" = 'sshd' ]; then
-  set -- /usr/sbin/sshd -D
+# this if will check if the first argument is a flag
+# but only works if all arguments require a hyphenated flag
+# -v; -SL; -f arg; etc will work, but not arg1 arg2
+if [ "${1:0:1}" = '-' ]; then
+    set -- /usr/sbin/sshd "$@"
+fi
 
+# if command is sshd, set it up correctly
+if [ "${1}" = '/usr/sbin/sshd' ]; then
   # Setup SSH HostKeys if needed
   for algorithm in rsa ecdsa ed25519
   do
@@ -32,6 +37,10 @@ if [ ! -f ~git/.ssh/authorized_keys ]; then
 # Check setup at every startup
 else
   su - git -c "gitolite setup"
+fi
+
+if [ "${1}" = 'sshd' ]; then
+  exec "$@" -D
 fi
 
 exec "$@"
