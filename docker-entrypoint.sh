@@ -8,8 +8,9 @@ if [ "${1:0:1}" = '-' ]; then
 fi
 
 # if command is sshd, set it up correctly
-if [ "${1}" = '/usr/sbin/sshd' ]; then
+if [ "${1}" = '/usr/sbin/sshd' ] || [ "${1}" = 'sshd' ]; then
   # Setup SSH HostKeys if needed
+  # TODO: i think i need to do something more to get rid of dsa here
   for algorithm in rsa ecdsa ed25519
   do
     keyfile=/etc/ssh/keys/ssh_host_${algorithm}_key
@@ -21,7 +22,7 @@ fi
 # Fix permissions at every startup
 chown -R git:git ~git
 
-# Setup gitolite admin  
+# Setup gitolite admin
 if [ ! -f ~git/.ssh/authorized_keys ]; then
   if [ -n "$SSH_KEY" ]; then
     [ -n "$SSH_KEY_NAME" ] || SSH_KEY_NAME=admin
@@ -39,8 +40,9 @@ else
   su - git -c "gitolite setup"
 fi
 
-if [ "${1}" = '/usr/sbin/sshd' ]; then
-  exec "$@" -D
+if [ "${1}" = '/usr/sbin/sshd' ] || [ "${1}" = 'sshd' ] ; then
+  shift
+  exec /usr/sbin/sshd -D "$@"
 fi
 
 exec "$@"
