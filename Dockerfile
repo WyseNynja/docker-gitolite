@@ -1,11 +1,11 @@
-FROM alpine:3.5
+FROM bwstitt/alpine:3.5
 
 # Install OpenSSH server and Gitolite
 # Unlock the automatically-created git user
-RUN set -x \
- && apk add --update gitolite openssh \
- && rm -rf /var/cache/apk/* \
- && passwd -u git
+RUN set -eux; \
+    \
+    docker-apk-install gitolite openssh; \
+    passwd -u git
 
 # Volume used to store SSH host keys, generated on first run
 VOLUME /etc/ssh/keys
